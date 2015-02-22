@@ -53,11 +53,11 @@ class FeatureBranch < ActiveRecord::Base
   end
 
   def build_and_launch
-    do_operation 'launch', build_commands + launch_commands
+    do_operation 'build_and_launch', build_commands + launch_commands
   end
 
   def build_and_relaunch
-    do_operation 'launch', build_commands + stop_commands + launch_commands
+    do_operation 'build_and_relaunch', build_commands + stop_commands + launch_commands
   end
 
   def stop
@@ -69,7 +69,7 @@ class FeatureBranch < ActiveRecord::Base
   end
 
   def stop_and_rm
-    do_operation 'rm', stop_commands + rm_commands
+    do_operation 'stop_and_rm', stop_commands + rm_commands
   end
 
   private
@@ -149,6 +149,6 @@ class FeatureBranch < ActiveRecord::Base
   end
 
   def client
-    @client ||= Octokit::Client.new(:access_token => Rails.application.secrets.gh_token)
+    repo.client
   end
 end
