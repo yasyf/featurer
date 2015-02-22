@@ -1,5 +1,6 @@
 class DockerOperation < ActiveRecord::Base
   has_one :feature_branch
+  before_create :set_output
 
   def run(commands)
     self.pending = true
@@ -22,4 +23,11 @@ class DockerOperation < ActiveRecord::Base
       save
     end
   end
+
+  private
+
+  def set_output
+    self.output = ''
+  end
+
 end

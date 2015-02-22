@@ -2,7 +2,7 @@ class CreateDockerOperations < ActiveRecord::Migration
   def change
     create_table :docker_operations do |t|
       t.string :stage
-      t.text :output, default: ''
+      t.text :output
       t.boolean :pending, default: true
       t.boolean :succeeded, default: false
 
