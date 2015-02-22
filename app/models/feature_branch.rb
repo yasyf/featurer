@@ -6,6 +6,9 @@ class FeatureBranch < ActiveRecord::Base
   def self.from_request(request)
     branch, name, user, *host = request.host.split('.')
     repo = Repo.where(name: name, user: user).first
+    unless repo
+      raise ActiveRecord::RecordNotFound
+    end
     repo.feature_branches.where(name: branch).first_or_create
   end
 

@@ -8,3 +8,5 @@ Comments on GitHub PRs with links to Docker containers with that branch's change
 r = Repo.new user: 'yasyf', name: 'flask-start', dockerfile: 'Dockerfile'
 r.save
 ```
+
+Visit `http://master.flask-start.yasyf.localhost:3000`.
