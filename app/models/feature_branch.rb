@@ -37,7 +37,7 @@ class FeatureBranch < ActiveRecord::Base
 
   def launch
     command = "docker run -d -P --name #{docker_name} #{docker_name}"
-    do_operation 'build', command
+    do_operation 'launch', command
   end
 
   def stop

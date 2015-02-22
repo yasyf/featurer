@@ -7,8 +7,9 @@ class IndexController < ApplicationController
       feature_branch.launch
     else
       host = request.host.split('.')[3..-1].join('.')
-      redirect_to "http://#{host}:#{feature_branch.port}" and return
+      @link = "http://#{host}:#{feature_branch.port}"
     end
+    @fb = feature_branch
     @op = feature_branch.docker_operation
   end
 end

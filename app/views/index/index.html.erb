@@ -1,17 +1,34 @@
 <% content_for :refresh_tag do %>
-  <meta http-equiv='refresh' content='5;url=#bottom'>
+  <% if @op && @op.pending? %>
+    <meta http-equiv='refresh' content='2;url=#bottom'>
+  <% end %>
 <% end %>
 
-<% if @op %>
-  <p>
-    <code><%=  @op.stage %></code> is currently
-    <%=  @op.pending? ? 'pending' :  @op.succeeded? ? 'completed' : 'errored' %>.
-  </p>
+<div class="center-block text-center">
+  <h1>Featurer for <code><%= @fb.name %></code> on <code><%= @fb.repo.full_name %></code></h1>
 
-  <p>
-    <pre>
-      <%= @op.output %>
-    </pre>
-  </p>
-<% end %>
+  <% if @op %>
+    <p>
+      The most recent operation was a <b><code><%= @op.stage %></code></b>.
+      This operation is currently
+      <b><code><%= @op.pending? ? 'pending' :  @op.succeeded? ? 'completed' : 'errored' %></code></b>.
+    </p>
+  <% end %>
+
+  <% if @link %>
+    <a href="<%= @link %>" type="button" class="btn btn-success btn-lg">Visit Staged Feature Branch</a>
+  <% elsif @op.pending? %>
+    <a href="<%= request.url %>" type="button" class="btn btn-warning btn-lg">Feature Branch Not Ready</a>
+  <% else %>
+    <a href="<%= request.url %>" type="button" class="btn btn-danger btn-lg">Feature Branch Errored</a>
+  <% end %>
+
+  <% if @op %>
+    <h2><code><%= @op.stage %></code> Output</h2>
+
+    <p>
+      <pre><%= @op.output %></pre>
+    </p>
+  <% end %>
+</div>
 <a id='bottom'></a>
