@@ -37,7 +37,10 @@ class FeatureBranch < ActiveRecord::Base
   end
 
   def port
-    /0\.0\.0\.0:(\d+)->/.match(docker_container[5])[1]
+    begin
+      /0\.0\.0\.0:(\d+)->/.match(docker_container[5])[1]
+    rescue
+    end
   end
 
   def full_name
@@ -73,7 +76,7 @@ class FeatureBranch < ActiveRecord::Base
   end
 
   def comment
-    if pr and ENV['HOOK_HOST']
+    if pr && port && ENV['HOOK_HOST']
       text = "## Branch Staged\nThis feature branch has been staged [here](http://#{ENV['HOOK_HOST']}:#{port})."
       if (old = old_comment)
         client.update_comment repo.full_name, old[:id], text
@@ -136,7 +139,9 @@ class FeatureBranch < ActiveRecord::Base
     unless operation_pending?
       self.docker_operation = DockerOperation.new stage: stage
       save
-      docker_operation.run commands
+      docker_operation.run commands do
+        comment if stage.include? 'build'
+      end
     end
   end
 

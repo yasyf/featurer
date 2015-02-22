@@ -26,6 +26,7 @@ class DockerOperation < ActiveRecord::Base
       self.succeeded = $?.exitstatus == 0
       self.pending = false
       save
+      yield if block_given?
     end
   end
 
