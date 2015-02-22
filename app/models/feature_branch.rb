@@ -26,7 +26,8 @@ class FeatureBranch < ActiveRecord::Base
   end
 
   def build
-    commands = ["git clone -b #{name} git@github.com:#{repo.full_name}.git repo",
+    url = "https://#{Rails.application.secrets.gh_token}@github.com/#{repo.full_name}.git"
+    commands = ["git clone -b #{name} #{url} repo",
             "cd repo && docker build -t #{docker_name} -f #{repo.dockerfile} ."]
     do_operation 'build', commands
   end
