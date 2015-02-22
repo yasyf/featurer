@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  url: MyString
+  dockerfile: MyString
+
+two:
+  url: MyString
+  dockerfile: MyString

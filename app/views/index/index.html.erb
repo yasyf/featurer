@@ -1,0 +1,12 @@
+<% if @op %>
+  <p>
+    <code><%=  @op.stage %></code> is currently
+    <%=  @op.pending? ? 'pending' :  @op.succeeded? ? 'completed' : 'errored' %>.
+  </p>
+
+  <p>
+    <pre>
+      <%= @op.output %>
+    </pre>
+  </p>
+<% end %>
