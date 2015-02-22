@@ -74,10 +74,19 @@ class FeatureBranch < ActiveRecord::Base
 
   private
 
+  def docker_version
+    `docker -v`[/\d\.\d\.\d/].to_f
+  end
+
   def build_commands
     url = "https://#{Rails.application.secrets.gh_token}@github.com/#{repo.full_name}.git"
-    ["git clone -b #{name} #{url} repo",
-     "cd repo && sudo docker build -t #{docker_name} -f #{repo.dockerfile} ."]
+    commands = ["git clone -b #{name} #{url} repo"]
+    if docker_version >= 1.5
+      commands << "cd repo && sudo docker build -t #{docker_name} -f #{repo.dockerfile} ."
+    else
+      commands << "mv repo/#{repo.dockerfile} repo/Dockerfile"
+      commands << "cd repo && sudo docker build -t #{docker_name} ."
+    end
   end
 
   def launch_commands
