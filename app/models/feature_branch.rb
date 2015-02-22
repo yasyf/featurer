@@ -1,5 +1,4 @@
 class FeatureBranch < ActiveRecord::Base
-  validates :port, uniqueness: true
   belongs_to :repo
   belongs_to :docker_operation
   before_create :set_gh_info
@@ -27,25 +26,35 @@ class FeatureBranch < ActiveRecord::Base
   end
 
   def build
-    unless operation_pending?
-      self.docker_operation = DockerOperation.new stage: 'build'
-      save
-      commands = ["git clone -b #{name} git@github.com:#{repo.full_name}.git repo",
-                  "cd repo && docker build -t #{docker_name} -f #{repo.dockerfile} ."]
-      docker_operation.run commands
-    end
+    commands = ["git clone -b #{name} git@github.com:#{repo.full_name}.git repo",
+            "cd repo && docker build -t #{docker_name} -f #{repo.dockerfile} ."]
+    do_operation 'build', commands
   end
 
   def launch
-    unless operation_pending?
-      self.docker_operation = DockerOperation.new stage: 'launch'
-      save
-      commands = ["docker run -d -P --name #{docker_name} #{docker_name}"]
-      docker_operation.run commands
-    end
+    command = "docker run -d -P --name #{docker_name} #{docker_name}"
+    do_operation 'build', command
+  end
+
+  def stop
+    command = "docker stop #{docker_name}"
+    do_operation 'stop', command
+  end
+
+  def rm
+    commands = ["docker rm #{docker_name}", "docker rmi #{docker_name}"]
+    do_operation 'rm', commands
   end
 
   private
+
+  def do_operation(stage, commands)
+    unless operation_pending?
+      self.docker_operation = DockerOperation.new stage: stage
+      save
+      docker_operation.run commands
+    end
+  end
 
   def docker_name
     full_name.gsub '/', '_'
