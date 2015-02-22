@@ -77,7 +77,7 @@ class FeatureBranch < ActiveRecord::Base
 
   def comment
     if pr && port && ENV['HOOK_HOST']
-      text = "## Branch Staged\nThis feature branch has been staged [here](http://#{ENV['HOOK_HOST']}:#{port})."
+      text = "## Branch Staged\nThis feature branch has been staged [here](http://#{ENV['HOOK_HOST']}:#{port}) as of #{sha}."
       if (old = old_comment)
         client.update_comment repo.full_name, old[:id], text
       else
@@ -143,6 +143,7 @@ class FeatureBranch < ActiveRecord::Base
         if stage.include? 'build'
           set_gh_info
           comment
+          save
         end
       end
     end
