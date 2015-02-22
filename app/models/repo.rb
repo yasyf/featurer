@@ -20,7 +20,7 @@ class Repo < ActiveRecord::Base
   private
 
   def create_hook
-    if ENV['HOOK_HOST']
+    if ENV['HOOK_HOST'] and !hook.present?
       config = {url: "http://#{ENV['HOOK_HOST']}/webhook", :content_type => 'json'}
       options = {events: ['pull_request', 'delete'], active: true}
       client.create_hook full_name, 'web', config, options

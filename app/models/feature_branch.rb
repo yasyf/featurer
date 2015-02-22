@@ -13,8 +13,8 @@ class FeatureBranch < ActiveRecord::Base
   end
 
   def self.from_pr(repo_name, pr)
-    user, name = repo_name
-    pull = client.pull_request repo_name, pr
+    user, name = repo_name.split('/')
+    pull = Repo.new.client.pull_request repo_name, pr
     self.from_branch user, name, pull.head.ref, pr
   end
 
