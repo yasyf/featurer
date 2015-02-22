@@ -11,8 +11,13 @@ class DockerOperation < ActiveRecord::Base
           Array.wrap(commands).each do |command|
             IO.popen(command, err: [:child, :out]) do |io|
               while (line = io.gets) do
-                 self.output << "#{line.strip}\n"
-                 save
+                out = "#{line.scrub.strip}\n"
+                if self.output.length > 25000
+                  self.output = out
+                else
+                  self.output << out
+                end
+                save
               end
             end
           end
