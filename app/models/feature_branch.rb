@@ -78,8 +78,8 @@ class FeatureBranch < ActiveRecord::Base
   def comment
     if pr && port && ENV['HOOK_HOST']
       url = "http://#{ENV['HOOK_HOST']}:#{port}"
-      text = """## Branch Staged\nThis feature branch has been staged [here](#{url}) as of #{sha}.\n
-      ![](http://api.page2images.com/directlink?p2i_url=#{url}&p2i_key=f5e1287dd70a5b6f)"""
+      text = "## Branch Staged\nThis feature branch has been staged [here](#{url}) as of #{sha}.\n" +
+              "![](http://api.page2images.com/directlink?p2i_url=#{url}&p2i_key=f5e1287dd70a5b6f)"
       if (old = old_comment)
         client.update_comment repo.full_name, old[:id], text
       else
