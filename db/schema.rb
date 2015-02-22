@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150222024141) do
+ActiveRecord::Schema.define(version: 20150222053202) do
 
   create_table "docker_operations", force: :cascade do |t|
     t.string   "stage"
@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(version: 20150222024141) do
     t.string   "dockerfile"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text     "secrets"
   end
 
 end

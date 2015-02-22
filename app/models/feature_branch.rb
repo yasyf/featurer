@@ -36,7 +36,8 @@ class FeatureBranch < ActiveRecord::Base
   end
 
   def launch
-    command = "docker run -d -P --name #{docker_name} #{docker_name}"
+    secrets = repo.secrets.map { |k,v| "-e #{k}=#{v}" }.join ' '
+    command = "docker run -d -P --name #{docker_name} #{secrets} #{docker_name}"
     do_operation 'launch', command
   end
 
