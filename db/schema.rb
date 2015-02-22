@@ -15,7 +15,7 @@ ActiveRecord::Schema.define(version: 20150222053202) do
 
   create_table "docker_operations", force: :cascade do |t|
     t.string   "stage"
-    t.text     "output",     default: ""
+    t.text     "output"
     t.boolean  "pending",    default: true
     t.boolean  "succeeded",  default: false
     t.datetime "created_at",                 null: false
