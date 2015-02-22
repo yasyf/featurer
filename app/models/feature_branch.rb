@@ -103,6 +103,7 @@ class FeatureBranch < ActiveRecord::Base
       feature_branch.pr = pr
       feature_branch.save
     end
+    feature_branch
   end
 
   def do_operation(stage, commands)
