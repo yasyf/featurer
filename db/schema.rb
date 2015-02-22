@@ -24,13 +24,11 @@ ActiveRecord::Schema.define(version: 20150222053202) do
 
   create_table "feature_branches", force: :cascade do |t|
     t.string   "name"
-    t.integer  "port"
     t.integer  "pr"
     t.string   "sha"
     t.integer  "repo_id"
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
-    t.integer  "operation_id"
     t.integer  "docker_operation_id"
   end
 
