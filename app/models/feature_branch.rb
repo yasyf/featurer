@@ -5,11 +5,27 @@ class FeatureBranch < ActiveRecord::Base
 
   def self.from_request(request)
     branch, name, user, *host = request.host.split('.')
-    self.from_data branch, name, user
+    self.from_branch branch, name, user
   end
 
   def self.from_params(params)
-    self.from_data params[:user], params[:name], params[:branch]
+    self.from_branch params[:user], params[:name], params[:branch]
+  end
+
+  def self.from_pr(repo_name, pr)
+    user, name = repo_name
+    pull = client.pull_request repo_name, pr
+    self.from_branch user, name, pull.head.ref, pr
+  end
+
+  def self.from_ref(repo_name, ref)
+    user, name = repo_name
+    self.from_branch user, name, ref
+  end
+
+  def matches_pr?
+    pull = client.pull_request repo.full_name, pr
+    pull.head.sha == sha
   end
 
   def docker_image?
@@ -29,38 +45,65 @@ class FeatureBranch < ActiveRecord::Base
   end
 
   def build
-    url = "https://#{Rails.application.secrets.gh_token}@github.com/#{repo.full_name}.git"
-    commands = ["git clone -b #{name} #{url} repo",
-            "cd repo && docker build -t #{docker_name} -f #{repo.dockerfile} ."]
-    do_operation 'build', commands
+    do_operation 'build', build_commands
   end
 
   def launch
-    secrets = repo.secrets.map { |k,v| "-e #{k}=#{v}" }.join ' '
-    command = "docker run -d -P --name #{docker_name} #{secrets} #{docker_name}"
-    do_operation 'launch', command
+    do_operation 'launch', launch_commands
+  end
+
+  def build_and_launch
+    do_operation 'launch', build_commands + launch_commands
+  end
+
+  def build_and_relaunch
+    do_operation 'launch', build_commands + stop_commands + launch_commands
   end
 
   def stop
-    command = "docker stop #{docker_name}"
-    do_operation 'stop', command
+    do_operation 'stop', stop_commands
   end
 
   def rm
-    commands = ["docker rm #{docker_name}", "docker rmi #{docker_name}"]
-    do_operation 'rm', commands
+    do_operation 'rm', rm_commands
+  end
+
+  def stop_and_rm
+    do_operation 'rm', stop_commands + rm_commands
   end
 
   private
 
-  def self.from_data(user, name, branch)
+  def build_commands
+    url = "https://#{Rails.application.secrets.gh_token}@github.com/#{repo.full_name}.git"
+    ["git clone -b #{name} #{url} repo",
+     "cd repo && docker build -t #{docker_name} -f #{repo.dockerfile} ."]
+  end
+
+  def launch_commands
+    secrets = repo.secrets.map { |k,v| "-e #{k}=#{v}" }.join ' '
+    ["docker run -d -P --name #{docker_name} #{secrets} #{docker_name}"]
+  end
+
+  def stop_commands
+    ["docker stop #{docker_name}", "docker rm #{docker_name}"]
+  end
+
+  def rm_commands
+    ["docker rmi #{docker_name}"]
+  end
+
+  def self.from_branch(user, name, branch, pr = nil)
     repo = Repo.where(name: name, user: user).first
     unless repo
       raise ActiveRecord::RecordNotFound
     end
-    repo.feature_branches.where(name: branch).first_or_create
+    feature_branch = repo.feature_branches.where(name: branch).first_or_create
+    if pr
+      feature_branch.pr = pr
+      feature_branch.save
+    end
   end
-
 
   def do_operation(stage, commands)
     unless operation_pending?
