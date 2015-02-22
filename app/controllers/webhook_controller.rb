@@ -21,6 +21,8 @@ class WebhookController < ApplicationController
           end
         end
       end
+    elsif event == 'ping'
+      render head: ok and return
     else
       render json: {error: 'invalid action'}, status: 422 and return
     end
