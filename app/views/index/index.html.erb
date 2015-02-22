@@ -15,7 +15,7 @@
     </p>
   <% end %>
 
-  <% if @link %>
+  <% if @link && !@op.pending? %>
     <a href="<%= @link %>" type="button" class="btn btn-success btn-lg">Visit Staged Feature Branch</a>
   <% elsif @op.pending? %>
     <a href="<%= request.url %>" type="button" class="btn btn-warning btn-lg">Feature Branch Not Ready</a>
