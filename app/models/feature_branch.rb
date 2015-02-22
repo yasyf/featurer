@@ -90,7 +90,7 @@ class FeatureBranch < ActiveRecord::Base
 
   def old_comment
     if pr
-      issue_comments(repo.full_name, pr).find { |com| com[:body].include? "## Branch Staged" }
+      client.issue_comments(repo.full_name, pr).find { |com| com[:body].include? "## Branch Staged" }
     end
   end
 
