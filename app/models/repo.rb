@@ -1,5 +1,5 @@
 class Repo < ActiveRecord::Base
-  has_many :feature_branches, dependent: destroy
+  has_many :feature_branches, dependent: :destroy
   after_save :create_hook
   before_destroy :delete_hook
 

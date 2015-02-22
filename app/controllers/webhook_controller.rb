@@ -6,6 +6,7 @@ class WebhookController < ApplicationController
       if ['opened', 'reopened', 'synchronize'].include? params[:action]
         unless feature_branch.docker_image? && feature_branch.matches_pr?
           feature_branch.build_and_relaunch
+          feature_branch.comment
         end
       elsif params[:action] == 'closed'
         feature_branch.stop_and_rm

@@ -72,7 +72,24 @@ class FeatureBranch < ActiveRecord::Base
     do_operation 'stop_and_rm', stop_commands + rm_commands
   end
 
+  def comment
+    if pr and ENV['HOOK_HOST']
+      text = "## Branch Staged\nThis feature branch has been staged [here](http://#{ENV['HOOK_HOST']}:#{port})."
+      if (old = old_comment)
+        client.update_comment repo.full_name, old[:id], text
+      else
+        client.add_comment repo.full_name, pr, text
+      end
+    end
+  end
+
   private
+
+  def old_comment
+    if pr
+      issue_comments(repo.full_name, pr).find { |com| com[:body].include? "## Branch Staged" }
+    end
+  end
 
   def docker_version
     `docker -v`[/\d\.\d\.\d/].to_f
