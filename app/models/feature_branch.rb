@@ -84,7 +84,7 @@ class FeatureBranch < ActiveRecord::Base
     if docker_version >= 1.5
       commands << "cd repo && sudo docker build -t #{docker_name} -f #{repo.dockerfile} ."
     else
-      commands << "mv repo/#{repo.dockerfile} repo/Dockerfile"
+      commands << "mv repo/#{repo.dockerfile} repo/Dockerfile" if repo.dockerfile != 'Dockerfile'
       commands << "cd repo && sudo docker build -t #{docker_name} ."
     end
   end
