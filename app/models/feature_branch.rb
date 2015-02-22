@@ -140,7 +140,10 @@ class FeatureBranch < ActiveRecord::Base
       self.docker_operation = DockerOperation.new stage: stage
       save
       docker_operation.run commands do
-        comment if stage.include? 'build'
+        if stage.include? 'build'
+          set_gh_info
+          comment
+        end
       end
     end
   end
