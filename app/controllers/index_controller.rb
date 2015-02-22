@@ -1,6 +1,16 @@
 class IndexController < ApplicationController
   def index
-    feature_branch = FeatureBranch.from_request request
+    process_branch FeatureBranch.from_request request
+  end
+
+  def branch
+    process_branch FeatureBranch.from_params params
+    render 'index/index'
+  end
+
+  private
+
+  def process_branch(feature_branch)
     if !feature_branch.docker_image?
       feature_branch.build
     elsif !feature_branch.docker_container?
