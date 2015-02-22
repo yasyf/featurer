@@ -5,7 +5,7 @@ Comments on GitHub PRs with links to Docker containers with that branch's change
 ### Example
 
 ```ruby
-r = Repo.new user: 'yasyf', name: 'flask-start', dockerfile: 'Dockerfile'
+r = Repo.new user: 'yasyf', name: 'flask-start', dockerfile: 'Dockerfile', secrets: {DEV: true, SK: '123abc'}
 r.save
 ```
 
