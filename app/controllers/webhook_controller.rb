@@ -1,6 +1,6 @@
 class WebhookController < ApplicationController
   def index
-    event = request.header['X-Github-Event']
+    event = request.headers['X-Github-Event']
     if event == 'pull_request'
       feature_branch = FeatureBranch.from_pr params[:pull_request][:repo][:full_name], params[:number]
       if ['opened', 'reopened', 'synchronize'].include? params[:action]
@@ -10,6 +10,7 @@ class WebhookController < ApplicationController
       elsif params[:action] == 'closed'
         feature_branch.stop_and_rm
       end
+      head :ok
     elsif event == 'delete'
       if params[:ref_type] == 'branch'
         feature_branch = FeatureBranch.from_ref params[:repository][:full_name], params[:ref]
@@ -21,10 +22,11 @@ class WebhookController < ApplicationController
           end
         end
       end
+      head :ok
     elsif event == 'ping'
-      render head: ok and return
+      head :ok
     else
-      render json: {error: 'invalid action'}, status: 422 and return
+      head 422
     end
   end
 end
