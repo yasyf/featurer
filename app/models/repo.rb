@@ -17,6 +17,6 @@ class Repo < ActiveRecord::Base
   def create_hook
     config = {url: "http://#{ENV['HOOK_HOST']}/webhook", :content_type => 'json'}
     options = {events: ['pull_request', 'delete'], active: true}
-    client.create_hook full_name, 'docker', config, options
+    client.create_hook full_name, 'web', config, options
   end
 end
