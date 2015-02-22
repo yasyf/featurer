@@ -77,20 +77,20 @@ class FeatureBranch < ActiveRecord::Base
   def build_commands
     url = "https://#{Rails.application.secrets.gh_token}@github.com/#{repo.full_name}.git"
     ["git clone -b #{name} #{url} repo",
-     "cd repo && docker build -t #{docker_name} -f #{repo.dockerfile} ."]
+     "cd repo && sudo docker build -t #{docker_name} -f #{repo.dockerfile} ."]
   end
 
   def launch_commands
     secrets = repo.secrets.map { |k,v| "-e #{k}=#{v}" }.join ' '
-    ["docker run -d -P --name #{docker_name} #{secrets} #{docker_name}"]
+    ["sudo docker run -d -P --name #{docker_name} #{secrets} #{docker_name}"]
   end
 
   def stop_commands
-    ["docker stop #{docker_name}", "docker rm #{docker_name}"]
+    ["sudo docker stop #{docker_name}", "sudo docker rm #{docker_name}"]
   end
 
   def rm_commands
-    ["docker rmi #{docker_name}"]
+    ["sudo docker rmi #{docker_name}"]
   end
 
   def self.from_branch(user, name, branch, pr = nil)
@@ -127,7 +127,7 @@ class FeatureBranch < ActiveRecord::Base
   end
 
   def docker(command)
-    `docker #{command}`.split("\n").map { |row| row.split("  ").select(&:present?).map(&:strip) }
+    `sudo docker #{command}`.split("\n").map { |row| row.split("  ").select(&:present?).map(&:strip) }
   end
 
   def operation_pending?
